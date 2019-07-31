@@ -1,8 +1,8 @@
 # HB-Dis-EP-75BW
 
-<img src="Images/IMG_9984.jpg" width=400></img><br/>
+<img src="Images/IMG_9984.jpg" ></img><br/>
 _Erster Prototyp: Rahmen nur fix als Hilfe gedruckt, um das Display vor versehentlichen Beschädigungen zu schützen._<br/><br/>
-<img src="Images/Display_Inhalt_Grid.jpeg" width=400></img><br/>
+<img src="Images/Display_Inhalt_Grid.jpeg" ></img><br/>
 _Aufbau in 3 Spalten á 6 Zeilen. Gitternetz lässt sich optional einblenden.<br/>_
 _Die Flecken auf dem Display sind Luftblasen unter der noch vorhandenen Schutzfolie_<br/>
 
@@ -88,8 +88,11 @@ WriteLine(cmd);
 dom.GetObject("BidCos-RF.JPDISEP750:9.SUBMIT").State(cmd);
 ```
 
-<img src="Images/Icon_Text_Matrix.png" width=400></img>
+<img src="Images/Icon_Text_Matrix.png" ></img><br/>
+_Schematische Aufteilung des Displays_<br/>
 
-<img src="Images/CCU_Einstellungen.png" width=400></img>
+<img src="Images/CCU_Einstellungen.png" ></img><br/>
+_Einstellmöglichkeiten_<br/>
 
-<img src="Images/CCU_Einstellungen_Info.png" width=400></img>
+<img src="Images/CCU_Einstellungen_Info.png" ></img><br/>
+_Übersicht der verfügbaren Icons_<br/>
