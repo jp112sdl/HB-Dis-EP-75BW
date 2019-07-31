@@ -4,6 +4,7 @@
 _Erster Prototyp: Rahmen nur fix als Hilfe gedruckt, um das Display vor versehentlichen Beschädigungen zu schützen._<br/><br/>
 <img src="Images/Display_Inhalt_Grid.jpeg" width=400></img><br/>
 _Aufbau in 3 Spalten á 6 Zeilen. Gitternetz lässt sich optional einblenden.<br/>_
+_Die Flecken auf dem Display sind Luftblasen unter der noch vorhandenen Schutzfolie_<br/>
 
 
 Beispielskript, mit dem der abgebildete Inhalt erzeugt wurde:<br>
