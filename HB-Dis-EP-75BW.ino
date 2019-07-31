@@ -70,14 +70,15 @@ U8G2_FOR_ADAFRUIT_GFX u8g2Fonts;
 
 #define TEXT_LENGTH        16
 #define DISPLAY_LINES      36
-#define COLUMN_WIDTH       210
+#define COLUMN_WIDTH       212
 #define ICON_ROWS          6
-#define TEXT_ROWS          ICON_ROWS * 2
+#define TEXT_ROWS          (ICON_ROWS * 2)
 #define ICON_HEIGHT        56
 #define ICON_WIDTH         ICON_HEIGHT
 #define ICON_MARGIN        4
 #define ICON_COL_WIDTH     ICON_WIDTH+ICON_MARGIN
 #define TEXT_COL_WIDTH     150
+#define PADDING            3
 #define LINE_HEIGHT        (ICON_HEIGHT + (2 * ICON_MARGIN)) / 2
 
 #define FONT_REGULAR       u8g2_font_helvR14_tf
@@ -187,14 +188,10 @@ class ePaperType : public Alarm {
         }
     } workingLed;
   private:
-    bool                 mUpdateDisplay;
-    bool                 shInitDisplay;
-    bool                 inverted;
-    bool                 waiting;
-    uint16_t             clFG;
-    uint16_t             clBG;
+    bool                 mUpdateDisplay, shInitDisplay, inverted, waiting, showgrid;
+    uint16_t             clFG, clBG;
   public:
-    ePaperType () :  Alarm(0), mUpdateDisplay(false), shInitDisplay(false), inverted(false), waiting(false), clFG(GxEPD_BLACK), clBG(GxEPD_WHITE)  {}
+    ePaperType () :  Alarm(0), mUpdateDisplay(false), shInitDisplay(false), inverted(false), waiting(false), showgrid(false), clFG(GxEPD_BLACK), clBG(GxEPD_WHITE)  {}
     virtual ~ePaperType () {}
 
     uint16_t ForegroundColor() {
@@ -211,6 +208,14 @@ class ePaperType : public Alarm {
 
     void BackgroundColor(uint16_t c) {
       clBG = c;
+    }
+
+    bool showGrid() {
+      return showgrid;
+    }
+
+    void showGrid(bool sg) {
+      showgrid = sg;
     }
 
     bool Inverted() {
@@ -295,7 +300,7 @@ class ePaperType : public Alarm {
     }
 } ePaper;
 
-DEFREGISTER(Reg0, MASTERID_REGS, DREG_TRANSMITTRYMAX, DREG_LEDMODE, DREG_LOWBATLIMIT, 0x06, 0x07, 0x34, 0x35)
+DEFREGISTER(Reg0, MASTERID_REGS, DREG_TRANSMITTRYMAX, DREG_LEDMODE, DREG_LOWBATLIMIT, 0x06, 0x07, 0x34, 0x35, 0x36, 0x90)
 class DispList0 : public RegList0<Reg0> {
   public:
     DispList0(uint16_t addr) : RegList0<Reg0>(addr) {}
@@ -335,6 +340,13 @@ class DispList0 : public RegList0<Reg0> {
       return this->writeRegister(0x35, value);
     }
 
+    bool showGrid (uint8_t value) const {
+      return this->writeRegister(0x90, 0x01, 0, value & 0xff);
+    }
+    bool showGrid () const {
+      return this->readRegister(0x90, 0x01, 0, false);
+    }
+
     void defaults () {
       clear();
       displayInvertingHb(false);
@@ -343,6 +355,7 @@ class DispList0 : public RegList0<Reg0> {
       displayRefreshWaitTime(50);
       powerUpMode(0);
       powerUpKey(0);
+      showGrid(false);
 #ifdef BATTERY_MODE
       lowBatLimit(DEF_LOWBAT_VOLTAGE);
       critBatLimit(DEF_CRITBAT_VOLTAGE);
@@ -575,15 +588,24 @@ class DispChannel : public RemoteChannel<Hal, PEERS_PER_CHANNEL, DispList0, Disp
 
         static uint8_t lastmsgcnt = 0xff;
         if (lastmsgcnt != msg.count()) {
-          //for (int i = 0; i < DISPLAY_LINES; i++) { DPRINT("LINE ");DDEC(i + 1);DPRINT(" BOLD = ");DDEC(DisplayLines[i].Bold);DPRINT(" TEXT = ");DPRINTLN(DisplayLines[i].Text); }
-          for (int i = 0; i < DISPLAY_LINES / 2; i++) {
+          /*for (int i = 0; i < DISPLAY_LINES; i++) {
+            DPRINT("LINE ");
+            DDEC(i + 1);
+            DPRINT(" BOLD = ");
+            DDEC(DisplayLines[i].Bold);
+            DPRINT(" CENT = ");
+            DDEC(DisplayLines[i].Center);
+            DPRINT(" TEXT = ");
+            DPRINTLN(DisplayLines[i].Text);
+            }*/
+          /*for (int i = 0; i < DISPLAY_LINES / 2; i++) {
             DPRINT(" ICON ");
             DDEC(i + 1);
             DPRINT(": ");
             DDEC(IconColumns[i].Num);
             DPRINT(", RIGHT = ");
             DDECLN(IconColumns[i].Right);
-          }
+            }*/
         }
         lastmsgcnt = msg.count();
         ePaper.mustUpdateDisplay(true);
@@ -660,12 +682,15 @@ class DisplayDevice : public ChannelDevice<Hal, VirtBaseChannel<Hal, DispList0>,
         ePaper.BackgroundColor(GxEPD_WHITE);
       }
       bool invertChanged = (ePaper.Inverted() != this->getList0().displayInvertingHb());
+      bool showGridChanged = (ePaper.showGrid() != this->getList0().showGrid());
       ePaper.Inverted(this->getList0().displayInvertingHb());
+      ePaper.showGrid(this->getList0().showGrid());
+      
       DPRINT(F("displayInverting: ")); DDECLN(this->getList0().displayInvertingHb());
-
       DPRINT(F("RefreshWaitTime : ")); DDECLN(this->getList0().displayRefreshWaitTime());
       DPRINT(F("PowerUpMode     : ")); DDECLN(this->getList0().powerUpMode());
       DPRINT(F("PowerUpKey      : ")); DDECLN(this->getList0().powerUpKey());
+      DPRINT(F("ShowGrid        : ")); DDECLN(this->getList0().showGrid());
 
       if (this->getList0().masterid().valid() == false || runSetup == true) {
         if (this->getList0().powerUpMode() == 0) {
@@ -675,7 +700,7 @@ class DisplayDevice : public ChannelDevice<Hal, VirtBaseChannel<Hal, DispList0>,
         }
       }
 
-      if (!runSetup && invertChanged) ePaper.mustUpdateDisplay(true);
+      if (!runSetup && (invertChanged || showGridChanged)) ePaper.mustUpdateDisplay(true);
     }
 };
 DisplayDevice sdev(devinfo, 0x20);
@@ -779,18 +804,27 @@ void updateDisplay() {
     if (i % 2 == 0) {
       uint8_t iconColumnIdx = i / 2;
       uint8_t icon_number = IconColumns[iconColumnIdx].Num;
+      uint8_t col = iconColumnIdx / ICON_ROWS;
+      uint8_t row = iconColumnIdx - (col * ICON_ROWS);
+      uint16_t y = (row * (ICON_HEIGHT + (2 * ICON_MARGIN))) + ICON_MARGIN;
       if (icon_number != 255) {
-        uint8_t col = iconColumnIdx / ICON_ROWS;
-        uint8_t row = iconColumnIdx - (col * ICON_ROWS);
         display.drawBitmap(
           Icons[icon_number],
-          /*x=*/(IconColumns[iconColumnIdx].Right ? TEXT_COL_WIDTH : 0) + (col * COLUMN_WIDTH) + 5,
-          /*y=*/(row * (ICON_HEIGHT + (2 * ICON_MARGIN))) + ICON_MARGIN,
+          /*x=*/(IconColumns[iconColumnIdx].Right ? TEXT_COL_WIDTH : 0) + (col * COLUMN_WIDTH) + PADDING,
+          /*y=*/y,
           /*w=*/ICON_WIDTH,
           /*h=*/ICON_HEIGHT,
           ePaper.ForegroundColor(),
           GxEPD::bm_normal
         );
+      }
+
+      if (ePaper.showGrid() == true) {
+        if (row > 0)
+          display.drawLine(0, y - (ICON_MARGIN / 2), display.width(), y - (ICON_MARGIN / 2), ePaper.ForegroundColor());
+
+        if (col > 0)
+          display.drawLine(col * COLUMN_WIDTH + 1, 0 , col * COLUMN_WIDTH + 1, display.height(), ePaper.ForegroundColor());
       }
     }
 
@@ -798,8 +832,8 @@ void updateDisplay() {
     String viewText = replaceText(DisplayLines[i].Text);
     u8g2Fonts.setFont(DisplayLines[i].Bold ? FONT_BOLD : FONT_REGULAR);
     uint8_t fh = (LINE_HEIGHT / 2) + ((LINE_HEIGHT - FONT_HEIGHT) / 2);
-    uint8_t col = i / (TEXT_ROWS);
-    uint8_t row = i - (col * (TEXT_ROWS));
+    uint8_t col = i / TEXT_ROWS;
+    uint8_t row = i - (col * TEXT_ROWS);
 
     if (i % 2 == 0 && DisplayLines[i + 1].Text == "") {
       fh = (LINE_HEIGHT / 2) + ((ICON_HEIGHT - FONT_HEIGHT)) / 2;
@@ -807,18 +841,22 @@ void updateDisplay() {
 
     uint8_t centerWidth = 0;
     if (DisplayLines[i].Center) {
-      if (i % 2 == 1) {
+      /*if (i % 2 == 1) {
         uint8_t prevTextWidth = u8g2Fonts.getUTF8Width(DisplayLines[i - 1].Text.c_str());
         uint8_t thisTextWidth = u8g2Fonts.getUTF8Width(viewText.c_str());
-        centerWidth = ( prevTextWidth - thisTextWidth ) / 2;
+        int16_t textWidthDiff = prevTextWidth - thisTextWidth;
+        centerWidth = textWidthDiff > 0 ? textWidthDiff / 2 : 0;
         if (IconColumns[i / 2].Right) centerWidth += (TEXT_COL_WIDTH - prevTextWidth);
-      }
+        }*/
+      uint8_t thisTextWidth = u8g2Fonts.getUTF8Width(viewText.c_str());
+      int16_t textWidthDiff = TEXT_COL_WIDTH - thisTextWidth;
+      centerWidth = textWidthDiff > 0 ? textWidthDiff / 2 : 0;
     } else {
       centerWidth = IconColumns[i / 2].Right ? TEXT_COL_WIDTH - u8g2Fonts.getUTF8Width(viewText.c_str()) : 0;
     }
 
     u8g2Fonts.setCursor(
-      /*x=*/(col * COLUMN_WIDTH) + (IconColumns[i / 2].Right ? 0 : (ICON_COL_WIDTH)) + 5 + centerWidth,
+      /*x=*/(col * COLUMN_WIDTH) + (IconColumns[i / 2].Right ? 0 : (ICON_COL_WIDTH)) + PADDING + centerWidth,
       /*y=*/(row * LINE_HEIGHT) + fh + (ICON_MARGIN * (i % 2 == 0 ? 1 : -1))
     );
 
