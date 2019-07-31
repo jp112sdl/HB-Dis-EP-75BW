@@ -6,6 +6,14 @@ _Erster Prototyp: Rahmen nur fix als Hilfe gedruckt, um das Display vor versehen
 _Aufbau in 3 Spalten á 6 Zeilen. Gitternetz lässt sich optional einblenden.<br/>_
 _Die Flecken auf dem Display sind Luftblasen unter der noch vorhandenen Schutzfolie_<br/>
 
+## Infos
+Thread im Homematic-Forum: https://homematic-forum.de/forum/viewtopic.php?f=76&t=51985&p=521315
+
+## Parts
+- siehe [4.2" ePaper Projekt](https://github.com/jp112sdl/HB-Dis-EP-42BW#parts)
+- 7.5" ePaper Display
+  - [mit SPI Controller](https://www.exp-tech.de/displays/e-paper-e-ink/8884/waveshare-7.5-e-ink-display-hat-for-raspberry-pi-640x384?c=1424) 
+  - [ohne SPI Controller](https://www.exp-tech.de/displays/e-paper-e-ink/8697/640x384-7.5inch-e-ink-raw-display?c=1424) _(falls man noch einen rumzuliegen hat ^^)_
 
 Beispielskript, mit dem der abgebildete Inhalt erzeugt wurde:<br>
 ```
