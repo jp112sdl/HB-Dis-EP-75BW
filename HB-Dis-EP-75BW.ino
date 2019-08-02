@@ -920,16 +920,24 @@ void initDisplay() {
 void emptyBatteryDisplay() {
   display.fillScreen(ePaper.BackgroundColor());
   uint16_t fg = ePaper.ForegroundColor();
-  display.fillRect(120, 80, 60, 40, fg);
 
-  uint8_t batt_x = 80;
-  uint8_t batt_y = 120;
-  uint8_t batt_w = 140;
-  uint8_t batt_h = 230;
+  uint8_t batt_x     = 205;
+  uint8_t batt_y     = 122;
+  uint8_t batt_w     = 230;
+  uint8_t batt_h     = 140;
+  uint8_t cap_width  = 40;
+  uint8_t cap_height = 60;
   uint8_t line_w = 4;
+
+  display.fillRect(batt_x+batt_w, batt_y+(batt_h / 2)-(cap_height/2), cap_width , cap_height, fg);
 
   for (uint8_t i = 0 ; i < line_w; i++) {
     display.drawRect(batt_x + i, batt_y + i, batt_w - i * 2, batt_h - i * 2, fg);
     display.drawLine(batt_x + i, batt_y + batt_h - 1, batt_x + batt_w - line_w + i, batt_y + 1, fg);
   }
+
+  u8g2Fonts.setFont(u8g2_font_helvB18_tf);
+  const char * batt_empty PROGMEM = "Batterie leer!";
+  u8g2Fonts.setCursor(centerPosition(batt_empty), 335);
+  u8g2Fonts.print(batt_empty);
 }
