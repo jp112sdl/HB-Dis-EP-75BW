@@ -100,7 +100,7 @@ U8G2_FOR_ADAFRUIT_GFX u8g2Fonts;
 #define MSG_MIN_LENGTH         3
 #define MSG_BUFFER_LENGTH    288
 
-#include "/Users/pechj/Documents/Arduino/ECHT-Einsatz/HB-DIS-EP-75BW/Icons.h"
+#include "Icons.h"
 
 // all library classes are placed in the namespace 'as'
 using namespace as;
