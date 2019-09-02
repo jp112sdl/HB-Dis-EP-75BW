@@ -18,9 +18,8 @@
 #define USE_WOR
 #endif
 
-
-
-
+// Uncomment the following #define if you use Stan23/Marco's 42W Board  
+// #define USE_BOARD42
 
 //////////////////// DISPLAY DEFINITIONS /////////////////////////////////////
 #include <GxEPD.h>
@@ -57,16 +56,32 @@ U8G2_FOR_ADAFRUIT_GFX u8g2Fonts;
 #define CC1101_MOSI_PIN     5
 #define CC1101_MISO_PIN     6
 #define CONFIG_BUTTON_PIN  15
-#define LED_PIN_1          10
-#define LED_PIN_2          13
-#define BTN1_PIN           A7
-#define BTN2_PIN           A6
-#define BTN3_PIN           A5
-#define BTN4_PIN           A4
-#define BTN5_PIN           A3
-#define BTN6_PIN           A2
-#define BTN7_PIN           A1
-#define BTN8_PIN           A0
+
+#ifdef USE_BOARD42
+  // IO's passend zum 42W Board von Stan23 (Marco)
+  #define LED_PIN_1           0   // PB0
+  #define LED_PIN_2           1   // PB1
+  #define BTN1_PIN            3   // PB3
+  #define BTN2_PIN           A1   // PA1
+  #define BTN3_PIN           A2   // PA2
+  #define BTN4_PIN           A3   // PA3
+  #define BTN5_PIN           A4   // PA4
+  #define BTN6_PIN           A5   // PA5
+  #define BTN7_PIN           A6   // PA6
+  #define BTN8_PIN           A7   // PA7
+#else
+  // Original Pin Definition von Jérôme
+  #define LED_PIN_1          10
+  #define LED_PIN_2          13
+  #define BTN1_PIN           A7
+  #define BTN2_PIN           A6
+  #define BTN3_PIN           A5
+  #define BTN4_PIN           A4
+  #define BTN5_PIN           A3
+  #define BTN6_PIN           A2
+  #define BTN7_PIN           A1
+  #define BTN8_PIN           A0
+#endif
 
 #define TEXT_LENGTH        16
 #define DISPLAY_LINES      36
