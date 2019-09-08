@@ -30,7 +30,12 @@
 #define GxRST_PIN  14
 #define GxBUSY_PIN 11
 #define GxDC_PIN   12
-#define GxCS_PIN   17
+
+#ifdef USE_BOARD42
+  #define GxCS_PIN   18  // 42W Board
+#else
+  #define GxCS_PIN   17  // Original Jérôme
+#endif
 
 GxIO_Class io(SPI, GxCS_PIN, GxDC_PIN, GxRST_PIN);
 GxEPD_Class display(io, GxRST_PIN, GxBUSY_PIN);
