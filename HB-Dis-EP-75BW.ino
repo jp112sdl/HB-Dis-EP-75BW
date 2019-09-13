@@ -875,8 +875,14 @@ void updateDisplay() {
       centerWidth = IconColumns[i / 2].Right ? TEXT_COL_WIDTH - u8g2Fonts.getUTF8Width(viewText.c_str()) : 0;
     }
 
+    // Calculate Offset if no Icon is defined. Means move the text 1/2 Icon Width to the left
+    uint8_t cOffset = 0;
+    if ((IconColumns[i / 2].Num == 0xff) && DisplayLines[i].Center) {
+      cOffset = ICON_WIDTH / 2;
+    }
+
     u8g2Fonts.setCursor(
-      /*x=*/(col * COLUMN_WIDTH) + (IconColumns[i / 2].Right ? 0 : (ICON_COL_WIDTH)) + PADDING + centerWidth,
+      /*x=*/(col * COLUMN_WIDTH) + (IconColumns[i / 2].Right ? 0 : (ICON_COL_WIDTH)) + PADDING + centerWidth - cOffset,
       /*y=*/(row * LINE_HEIGHT) + fh + (ICON_MARGIN * (i % 2 == 0 ? 1 : -1))
     );
 
