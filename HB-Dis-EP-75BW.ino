@@ -875,14 +875,21 @@ void updateDisplay() {
       centerWidth = IconColumns[i / 2].Right ? TEXT_COL_WIDTH - u8g2Fonts.getUTF8Width(viewText.c_str()) : 0;
     }
 
-    // Calculate Offset if no Icon is defined. Means move the text 1/2 Icon Width to the left
-    uint8_t cOffset = 0;
-    if ((IconColumns[i / 2].Num == 0xff) && DisplayLines[i].Center) {
-      cOffset = ICON_WIDTH / 2;
+    // Calculate Text X-Offset if no Icon is defined.
+    int8_t xOffset = 0;
+    if (IconColumns[i / 2].Num == 0xff) {
+      
+      // Standard, left aligned go full Icon Width to the left
+      xOffset = ICON_WIDTH * -1;
+      
+      // Centerred, go 1/2 Icon Width to the left
+      if ( DisplayLines[i].Center ) {
+        xOffset = ICON_WIDTH / 2 * -1;
+      }
     }
-
+    
     u8g2Fonts.setCursor(
-      /*x=*/(col * COLUMN_WIDTH) + (IconColumns[i / 2].Right ? 0 : (ICON_COL_WIDTH)) + PADDING + centerWidth - cOffset,
+      /*x=*/(col * COLUMN_WIDTH) + (IconColumns[i / 2].Right ? 0 : (ICON_COL_WIDTH)) + PADDING + centerWidth + xOffset,
       /*y=*/(row * LINE_HEIGHT) + fh + (ICON_MARGIN * (i % 2 == 0 ? 1 : -1))
     );
 
