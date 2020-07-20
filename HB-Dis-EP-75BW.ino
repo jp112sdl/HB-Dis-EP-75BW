@@ -126,7 +126,7 @@ U8G2_FOR_ADAFRUIT_GFX u8g2Fonts;
 using namespace as;
 
 const struct DeviceInfo PROGMEM devinfo = {
-  {0xf3, 0x47, 0x00},          // Device ID
+  {0xf3, 0x47, 0x01},          // Device ID
   "JPDISEP750",                // Device Serial
 #ifdef BATTERY_MODE
   {0xf3, 0x47},                // Device Model
@@ -164,7 +164,7 @@ typedef Radio<SPIType, CC1101_GDO0_PIN> RadioType;
 typedef StatusLed<LED_PIN_1> LedType;
 
 #ifdef BATTERY_MODE
-typedef AskSin<LedType, BatterySensor, RadioType> BaseHal;
+typedef AskSin<LedType, IrqInternalBatt, RadioType> BaseHal;
 #else
 typedef AskSin<LedType, NoBattery, RadioType> BaseHal;
 #endif
@@ -282,7 +282,7 @@ class ePaperType : public Alarm {
 
     void isWaiting(bool w) {
       waiting = w;
-      DPRINT("wait:"); DDECLN(waiting);
+      DPRINT(F("wait:")); DDECLN(waiting);
     }
 
     bool isWaiting() {
@@ -314,7 +314,7 @@ class ePaperType : public Alarm {
 
         workingLed.ledOff();
 #else
-        DPRINTLN("UPDATEDISPLAY!");
+        DPRINTLN(F("UPDATEDISPLAY!"));
 #endif
       }
     }
@@ -630,6 +630,7 @@ class DispChannel : public RemoteChannel<Hal, PEERS_PER_CHANNEL, DispList0, Disp
         lastmsgcnt = msg.count();
         ePaper.mustUpdateDisplay(true);
       }
+      DPRINT(F("Batt: ")); DDECLN(hal.battery.current());
       return true;
     }
 
@@ -762,6 +763,8 @@ void setup () {
   buttonISR(cfgBtn, CONFIG_BUTTON_PIN);
   sdev.initDone();
   DDEVINFO(sdev);
+
+  while (hal.battery.current() == 0);
 
 #ifndef NDISPLAY
   ePaper.init();
