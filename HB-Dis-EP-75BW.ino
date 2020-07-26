@@ -500,7 +500,7 @@ class RemChannel : public RemoteChannel<Hal, PEERS_PER_CHANNEL, DispList0, RemLi
 
 class DispChannel : public RemoteChannel<Hal, PEERS_PER_CHANNEL, DispList0, DispList1>  {
   private:
-    uint8_t       msgBufferIdx;
+    uint16_t      msgBufferIdx;
     uint8_t       msgBuffer[MSG_BUFFER_LENGTH];
   public:
     DispChannel () : RemoteChannel(), msgBufferIdx(0) {}
@@ -539,7 +539,7 @@ class DispChannel : public RemoteChannel<Hal, PEERS_PER_CHANNEL, DispList0, Disp
         msgBuffer[0] == MSG_START_KEY
       ) {
         DPRINT("RECV: ");
-        for (int i = 0; i < msgBufferIdx; i++) {
+        for (uint16_t i = 0; i < msgBufferIdx; i++) {
           DHEX(msgBuffer[i]); DPRINT(" ");
 
           if (msgBuffer[i] == AS_ACTION_COMMAND_EOT || msgBuffer[i] == MSG_TEXT_KEY_NORMAL || msgBuffer[i] == MSG_TEXT_KEY_BOLD || msgBuffer[i] == MSG_ICON_KEY) {
