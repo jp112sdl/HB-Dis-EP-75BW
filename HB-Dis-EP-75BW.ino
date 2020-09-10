@@ -950,7 +950,9 @@ void initDisplay() {
     u8g2Fonts.setCursor(centerPosition(nomaster2), 351); u8g2Fonts.print(nomaster2);
   }
 
-  display.drawRect(170, 103, 300, 145, ePaper.ForegroundColor());
+  #define BOX_WIDTH 300
+  int box_x = (display.width() - BOX_WIDTH) / 2;
+  display.drawRect(box_x, 103, BOX_WIDTH, 145, ePaper.ForegroundColor());
 }
 
 void emptyBatteryDisplay() {
