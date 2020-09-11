@@ -104,3 +104,14 @@ _Einstellmöglichkeiten_<br/>
 
 <img src="Images/CCU_Einstellungen_Info.png" ></img><br/>
 _Übersicht der verfügbaren Icons_<br/>
+
+## Frequenztest
+
+Damit man auf dem ATmega1284 den [Frequenztest](https://asksinpp.de/Grundlagen/FAQ/Fehlerhafte_CC1101.html#ermittlung-der-cc1101-frequenz) laufen lassen kann sind folgende Änderungen notwendig:
+
+In der Arduino-IDE:
+- Pinout von "Standard pinout" auf "Bobuino pinout" umstellen
+
+Im FreqTest-Sketch:
+- das #define CC1101_GDO0_PIN von 2 auf 6 ändern
+- das #define LED_PIN von 1 auf 5 ändern
