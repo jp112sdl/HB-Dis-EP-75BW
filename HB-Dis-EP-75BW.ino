@@ -21,9 +21,16 @@
 // Uncomment the following #define if you use Stan23/Marco's 42W Board  
 // #define USE_BOARD42
 
+// Uncomment the following #define if you use V2 of the 7.5" Display with 800*480 resolution
+// #define USE_HIGHRES
+
 //////////////////// DISPLAY DEFINITIONS /////////////////////////////////////
 #include <GxEPD.h>
-#include <GxGDEW075T8/GxGDEW075T8.h>        // 7.5" b/w
+#ifdef USE_HIGHRES
+  #include <GxGDEW075T7/GxGDEW075T7.h>        // 7.5" b/w 800*480
+#else
+  #include <GxGDEW075T8/GxGDEW075T8.h>        // 7.5" b/w 640x384
+#endif
 #include <GxIO/GxIO_SPI/GxIO_SPI.h>
 #include <GxIO/GxIO.h>
 
@@ -90,15 +97,25 @@ U8G2_FOR_ADAFRUIT_GFX u8g2Fonts;
 
 #define TEXT_LENGTH        16
 #define DISPLAY_LINES      36
-#define COLUMN_WIDTH       212
 #define ICON_ROWS          6
 #define TEXT_ROWS          (ICON_ROWS * 2)
-#define ICON_HEIGHT        56
+
+#ifdef USE_HIGHRES
+  #define COLUMN_WIDTH       265
+  #define ICON_HEIGHT        70
+  #define ICON_MARGIN        5
+  #define TEXT_COL_WIDTH     188
+  #define PADDING            2
+#else
+  #define COLUMN_WIDTH       212
+  #define ICON_HEIGHT        56
+  #define ICON_MARGIN        4
+  #define TEXT_COL_WIDTH     150
+  #define PADDING            3
+#endif
+
 #define ICON_WIDTH         ICON_HEIGHT
-#define ICON_MARGIN        4
 #define ICON_COL_WIDTH     ICON_WIDTH+ICON_MARGIN
-#define TEXT_COL_WIDTH     150
-#define PADDING            3
 #define LINE_HEIGHT        (ICON_HEIGHT + (2 * ICON_MARGIN)) / 2
 
 #define FONT_REGULAR       u8g2_font_helvR14_tf
@@ -120,7 +137,12 @@ U8G2_FOR_ADAFRUIT_GFX u8g2Fonts;
 #define MSG_MIN_LENGTH         3
 #define MSG_BUFFER_LENGTH    288
 
-#include "Icons.h"
+
+#ifdef USE_HIGHRES
+  #include "Icons_highRes.h"
+#else
+  #include "Icons.h"
+#endif
 
 // all library classes are placed in the namespace 'as'
 using namespace as;
@@ -915,7 +937,13 @@ void initDisplay() {
   const char * version      PROGMEM = "V " ASKSIN_PLUS_PLUS_VERSION;
   const char * compiledMsg  PROGMEM = "compiled on";
   const char * compiledDate PROGMEM = __DATE__ " " __TIME__;
+#ifdef USE_HIGHRES
+  const char * pages        PROGMEM = "GxGDEW075T7_PAGES: " TOSTR(GxGDEW075T7_PAGES);
+#else
   const char * pages        PROGMEM = "GxGDEW075T8_PAGES: " TOSTR(GxGDEW075T8_PAGES);
+#endif
+  
+
   const char * ser                  = (char*)serial;
   const char * nomaster1    PROGMEM = "- keine Zentrale -";
   const char * nomaster2    PROGMEM = "- angelernt -";
