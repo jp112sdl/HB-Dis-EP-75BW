@@ -114,4 +114,4 @@ In der Arduino-IDE:
 
 Im FreqTest-Sketch:
 - das #define CC1101_GDO0_PIN von 2 auf 6 ändern
-- das #define LED_PIN von 1 auf 5 ändern
+- das #define LED_PIN von 4 auf 5 ändern
