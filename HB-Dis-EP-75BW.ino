@@ -62,6 +62,11 @@ U8G2_FOR_ADAFRUIT_GFX u8g2Fonts;
 #include <Remote.h>
 #include <MultiChannelDevice.h>
 
+// make compatible with v5.0.0
+#ifndef ASKSIN_PLUS_PLUS_VERSION_STR
+  #define ASKSIN_PLUS_PLUS_VERSION_STR ASKSIN_PLUS_PLUS_VERSION
+#endif
+
 #define CC1101_CS_PIN       4
 #define CC1101_GDO0_PIN     2
 #define CC1101_SCK_PIN      7
@@ -934,7 +939,7 @@ void initDisplay() {
 
   const char * title        PROGMEM = "HB-Dis-EP-75BW";
   const char * asksinpp     PROGMEM = "AskSin++";
-  const char * version      PROGMEM = "V " ASKSIN_PLUS_PLUS_VERSION;
+  const char * version      PROGMEM = "V " ASKSIN_PLUS_PLUS_VERSION_STR;
   const char * compiledMsg  PROGMEM = "compiled on";
   const char * compiledDate PROGMEM = __DATE__ " " __TIME__;
 #ifdef USE_HIGHRES
