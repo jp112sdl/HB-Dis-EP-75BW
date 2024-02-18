@@ -11,6 +11,7 @@
 // #define USE_HW_SERIAL
 // #define NDEBUG
 // #define NDISPLAY
+#define HIDE_IGNORE_MSG
 
 #define BATTERY_MODE
 
